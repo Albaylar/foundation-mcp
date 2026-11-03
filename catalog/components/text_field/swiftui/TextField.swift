@@ -17,15 +17,15 @@ public struct FTextField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: FoundationTokens.Space.s2) {
-            Text(label).font(FoundationTokens.Type.caption).foregroundStyle(FoundationTokens.Color.text2)
+            Text(label).font(FoundationTokens.Typography.caption).foregroundStyle(FoundationTokens.Color.text2)
             TextField("", text: $text)
-                .font(FoundationTokens.Type.body)
+                .font(FoundationTokens.Typography.body)
                 .padding(FoundationTokens.Space.s3)
                 .frame(minHeight: 44)
                 .background(FoundationTokens.Color.surface, in: RoundedRectangle(cornerRadius: FoundationTokens.Radius.field))
                 .overlay(RoundedRectangle(cornerRadius: FoundationTokens.Radius.field).stroke(borderColor, lineWidth: 1))
             if let message = error ?? helper {
-                Text(message).font(FoundationTokens.Type.caption).foregroundStyle(error == nil ? FoundationTokens.Color.text2 : FoundationTokens.Color.danger)
+                Text(message).font(FoundationTokens.Typography.caption).foregroundStyle(error == nil ? FoundationTokens.Color.text2 : FoundationTokens.Color.danger)
             }
         }
         .accessibilityElement(children: .combine)

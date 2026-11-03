@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Version | 0.2.0 (2026-11-03) |
+| Version | 0.2.1 (2026-11-03) |
 | Language | Go 1.25+, official [`modelcontextprotocol/go-sdk`](https://github.com/modelcontextprotocol/go-sdk) v1.8.0 |
 | Transport | stdio (default, for `.mcp.json`) and streamable HTTP (shared server) |
 | Repository | [Albaylar/foundation-mcp](https://github.com/Albaylar/foundation-mcp) |
@@ -82,6 +82,7 @@ Expected output: `ok: 24 tokens (catalog tokens), 3 components`.
 | `--tokens <file>` | the project's token file, merged over the base tokens |
 | `--http :8765` | streamable HTTP instead of stdio (shared team server) |
 | `--check` | load and validate the catalog, then exit (setup and CI check) |
+| `--export swiftui\|flutter` | print the generated `FoundationTokens` file (with `--tokens`: the project's values), then exit |
 | `--version` | print the version |
 
 With the Mobile Development Kit, `/foundation setup` does all of this.
@@ -140,7 +141,7 @@ The token list and, on request, a **generated source file**.
 | `set` | `color` / `type` / `space` / `radius` / `motion` | empty = all |
 | `platform` | `swiftui` / `flutter` | if given, `export` holds the `FoundationTokens` file |
 
-SwiftUI output: `FoundationTokens.Color.brand`, `.Space.s4`, `.Type.label`, `.Radius.field`, `.Motion.fast`. Flutter output: `FoundationTokens.colorBrand`, `space4`, `typeLabel`. These files are **never edited by hand**; they are regenerated whenever tokens change.
+SwiftUI output: `FoundationTokens.Color.brand`, `.Space.s4`, `.Typography.label`, `.Radius.field`, `.Motion.fast`. Flutter output: `FoundationTokens.colorBrand`, `space4`, `typeLabel`. These files are **never edited by hand**; they are regenerated whenever tokens change.
 
 ### `search`
 Search by purpose: `"destructive confirmation"`, `"input with error"`. Every word is matched against name, purpose, tags and variant names; the best match comes first. Tokens are searched too.
@@ -268,10 +269,13 @@ cd ~/Developer/foundation-mcp && go vet ./... && go test ./...
 | `TestProjectTokensOverrideAndAdd` | the project value wins, a new token is added, an unset base value stays |
 | `TestProjectTokensMissingFile` | a missing project file is not swallowed |
 | `TestCheckUsageIgnoresTokenReferences` | clean source produces no findings |
+| `TestCheckUsageAcceptsTypesOfCatalogComponents` | `FButtonVariant` belongs to `FButton` and is not flagged; `FToast` still is |
+| `TestSwiftExportAvoidsReservedNames` | no nested `enum Type` in generated Swift |
+| `TestCatalogSourcesMatchTheGeneratedTokenNames` | catalog sources use the generated names |
 
 The tool tests drive the server through an **in-memory MCP transport** with a real client, so they run end to end including schema validation. New tests are verified by sabotage: break the behavior and the test must turn red (the project-token tests were checked this way).
 
-CI (`.github/workflows/ci.yml`): `go vet`, `go test`, `--check`.
+CI (`.github/workflows/ci.yml`) runs `go vet`, `go test` and `--check`, and **really compiles the catalog**: `scripts/compile-catalog.sh` generates the token file and typechecks every SwiftUI component against the iOS SDK with Swift 6, and runs `flutter analyze` on every Flutter component. String comparisons are not enough here: an early version generated a Swift enum named `Type`, which is reserved, and every test passed while nothing compiled.
 
 ## 11. Inside the code
 
@@ -290,7 +294,6 @@ Tool inputs are typed Go structs; their `jsonschema` tags become the tool schema
 Not done yet:
 - Compose sources (SwiftUI and Flutter only)
 - an automatic token import command from the Figma REST API
-- platform compile checks in CI (`swift build`, `flutter analyze`)
 - authentication for the HTTP transport
 - a versioned changelog resource
 - a platform-specific parser for `check_usage` (regex today)
@@ -303,7 +306,7 @@ Recommended next: Compose sources (only once a native Android project exists), t
 
 **Claude does not see the tools.** Are the paths in `.mcp.json` absolute? Did you restart Claude Code in that folder? Is `foundation` connected in `/mcp`? Does `./foundation … --check` fail? In the kit, `/foundation status` checks all of this at once.
 
-**I changed a token and the app still shows the old color.** Regenerate the `FoundationTokens` file (`get_tokens platform=…`, or `/foundation sync` in the kit).
+**I changed a token and the app still shows the old color.** Regenerate the `FoundationTokens` file (`./foundation --catalog … --tokens … --export swiftui`, `get_tokens platform=…`, or `/foundation sync` in the kit).
 
 **Why Go?** One static binary, no runtime, fast start; the official MCP SDK for Go is stable.
 

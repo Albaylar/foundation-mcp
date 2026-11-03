@@ -21,7 +21,7 @@ public struct FButton: View {
         Button(action: action, label: {
             ZStack {
                 Text(title)
-                    .font(FoundationTokens.Type.label)
+                    .font(FoundationTokens.Typography.label)
                     .opacity(isLoading ? 0 : 1)
                 if isLoading { ProgressView().tint(foreground) }
             }

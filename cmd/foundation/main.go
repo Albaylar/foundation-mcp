@@ -4,6 +4,7 @@
 //	foundation --catalog ./catalog --tokens ./app/design/tokens.json  stdio, with the app's brand tokens
 //	foundation --catalog ./catalog --http :8765                       streamable HTTP (shared instance)
 //	foundation --catalog ./catalog --tokens … --check                 validate and exit
+//	foundation --catalog ./catalog --tokens … --export swiftui        print the generated token file
 package main
 
 import (
@@ -20,7 +21,7 @@ import (
 	"github.com/Albaylar/foundation-mcp/internal/tools"
 )
 
-const version = "0.2.0"
+const version = "0.2.1"
 
 func main() {
 	root := flag.String("catalog", "catalog", "path to the shared catalog directory")
@@ -28,6 +29,7 @@ func main() {
 	addr := flag.String("http", "", "serve streamable HTTP on this address instead of stdio, e.g. :8765")
 	check := flag.Bool("check", false, "load and validate the catalog, then exit")
 	showVersion := flag.Bool("version", false, "print the version and exit")
+	export := flag.String("export", "", "print the generated FoundationTokens source for swiftui or flutter, then exit")
 	flag.Parse()
 
 	if *showVersion {
@@ -39,6 +41,15 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "catalog:", err)
 		os.Exit(1)
+	}
+	if *export != "" {
+		out := c.Export(*export, "")
+		if out == "" {
+			fmt.Fprintf(os.Stderr, "no export for platform %q (use swiftui or flutter)\n", *export)
+			os.Exit(1)
+		}
+		fmt.Print(out)
+		return
 	}
 	if *check {
 		src := "catalog tokens"

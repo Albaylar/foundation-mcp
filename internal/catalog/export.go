@@ -44,7 +44,7 @@ func exportSwift(toks []Token) string {
 			}
 			b.WriteString("    }\n")
 		case "type":
-			b.WriteString("    public enum Type {\n")
+			b.WriteString("    public enum Typography {\n")
 			for _, t := range groups[g] {
 				m, _ := t.Value.(map[string]any)
 				fmt.Fprintf(&b, "        public static let %s = Font.system(size: %v, weight: %s)\n", camel(t.Path), m["fontSize"], swiftWeight(fmt.Sprint(m["fontWeight"])))

@@ -329,7 +329,7 @@ func (c *Catalog) CheckUsage(source string) []Finding {
 			out = append(out, Finding{i + 1, "literal-spacing", trimmed, "use a space token (get_tokens set=space)"})
 		}
 		for _, m := range reComp.FindAllStringSubmatch(line, -1) {
-			if _, ok := c.Get(m[1]); !ok {
+			if !c.knownComponentName(m[1]) {
 				out = append(out, Finding{i + 1, "unknown-component", trimmed, "F" + m[1] + " is not in the catalog; register it through /design"})
 			}
 		}
@@ -390,4 +390,16 @@ func keys(m map[string]string) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// knownComponentName accepts a catalog component (Button) and types that belong to
+// one (ButtonVariant), so a component's own enum is not reported as unknown.
+func (c *Catalog) knownComponentName(name string) bool {
+	lower := strings.ToLower(name)
+	for key := range c.Components {
+		if strings.HasPrefix(lower, key) {
+			return true
+		}
+	}
+	return false
 }
