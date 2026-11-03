@@ -10,3 +10,19 @@ jobs:
       - run: go vet ./...
       - run: go test ./...
       - run: go run ./cmd/foundation --catalog ./catalog --check
+  swiftui:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: go.mod }
+      - run: bash scripts/compile-catalog.sh swiftui
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: go.mod }
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - run: bash scripts/compile-catalog.sh flutter
