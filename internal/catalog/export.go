@@ -1,0 +1,163 @@
+package catalog
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
+
+// Export renders the tokens of a set as source for one platform, so a project
+// can paste a generated FoundationTokens file instead of typing values.
+// Unsupported platform or set → empty string (the JSON list is still returned by the tool).
+func (c *Catalog) Export(platform, set string) string {
+	toks := c.TokensIn(set)
+	switch platform {
+	case "swiftui":
+		return exportSwift(toks)
+	case "flutter":
+		return exportDart(toks)
+	}
+	return ""
+}
+
+func exportSwift(toks []Token) string {
+	var b strings.Builder
+	b.WriteString("import SwiftUI\n\n// Generated from tokens.json by foundation-mcp. Do not edit.\npublic enum FoundationTokens {\n")
+	groups := group(toks)
+	for _, g := range sortedKeys(groups) {
+		switch g {
+		case "color":
+			b.WriteString("    public enum Color {\n")
+			for _, t := range groups[g] {
+				fmt.Fprintf(&b, "        public static let %s = SwiftUI.Color(hex: %q)\n", camel(t.Path), t.Value)
+			}
+			b.WriteString("    }\n")
+		case "space", "radius":
+			name := map[string]string{"space": "Space", "radius": "Radius"}[g]
+			fmt.Fprintf(&b, "    public enum %s {\n", name)
+			for _, t := range groups[g] {
+				n := camel(t.Path)
+				if g == "space" {
+					n = "s" + n
+				}
+				fmt.Fprintf(&b, "        public static let %s: CGFloat = %v\n", n, t.Value)
+			}
+			b.WriteString("    }\n")
+		case "type":
+			b.WriteString("    public enum Type {\n")
+			for _, t := range groups[g] {
+				m, _ := t.Value.(map[string]any)
+				fmt.Fprintf(&b, "        public static let %s = Font.system(size: %v, weight: %s)\n", camel(t.Path), m["fontSize"], swiftWeight(fmt.Sprint(m["fontWeight"])))
+			}
+			b.WriteString("    }\n")
+		case "motion":
+			b.WriteString("    public enum Motion {\n")
+			for _, t := range groups[g] {
+				fmt.Fprintf(&b, "        public static let %s: Double = %s\n", camel(t.Path), seconds(fmt.Sprint(t.Value)))
+			}
+			b.WriteString("    }\n")
+		}
+	}
+	b.WriteString("}\n\nextension SwiftUI.Color {\n    init(hex: String) {\n        var v: UInt64 = 0\n        Scanner(string: String(hex.dropFirst())).scanHexInt64(&v)\n        self.init(red: Double((v >> 16) & 0xFF) / 255, green: Double((v >> 8) & 0xFF) / 255, blue: Double(v & 0xFF) / 255)\n    }\n}\n")
+	return b.String()
+}
+
+func exportDart(toks []Token) string {
+	var b strings.Builder
+	b.WriteString("import 'package:flutter/material.dart';\n\n// Generated from tokens.json by foundation-mcp. Do not edit.\nabstract final class FoundationTokens {\n")
+	groups := group(toks)
+	for _, g := range sortedKeys(groups) {
+		for _, t := range groups[g] {
+			n := g + pascal(t.Path)
+			switch g {
+			case "color":
+				fmt.Fprintf(&b, "  static const Color %s = Color(0xFF%s);\n", n, strings.TrimPrefix(fmt.Sprint(t.Value), "#"))
+			case "space", "radius":
+				fmt.Fprintf(&b, "  static const double %s = %v;\n", n, t.Value)
+			case "type":
+				m, _ := t.Value.(map[string]any)
+				fmt.Fprintf(&b, "  static const TextStyle %s = TextStyle(fontSize: %v, fontWeight: FontWeight.w%v, height: %s);\n", n, m["fontSize"], m["fontWeight"], ratio(fmt.Sprint(m["lineHeight"]), fmt.Sprint(m["fontSize"])))
+			case "motion":
+				fmt.Fprintf(&b, "  static const Duration %s = Duration(milliseconds: %s);\n", n, strings.TrimSuffix(fmt.Sprint(t.Value), "ms"))
+			}
+		}
+	}
+	b.WriteString("}\n")
+	return b.String()
+}
+
+func group(toks []Token) map[string][]Token {
+	out := map[string][]Token{}
+	for _, t := range toks {
+		g := strings.SplitN(t.Path, ".", 2)[0]
+		out[g] = append(out[g], t)
+	}
+	return out
+}
+
+func sortedKeys(m map[string][]Token) []string {
+	var ks []string
+	for k := range m {
+		ks = append(ks, k)
+	}
+	sort.Strings(ks)
+	return ks
+}
+
+// camel: "color.brand-strong" → "brandStrong"; "space.4" → "4".
+func camel(path string) string {
+	p := pascal(path)
+	if p == "" {
+		return p
+	}
+	return strings.ToLower(p[:1]) + p[1:]
+}
+
+// pascal: "color.brand-strong" → "BrandStrong".
+func pascal(path string) string {
+	name := path[strings.Index(path, ".")+1:]
+	var b strings.Builder
+	up := true
+	for _, r := range name {
+		if r == '-' || r == '_' || r == '.' {
+			up = true
+			continue
+		}
+		if up {
+			b.WriteString(strings.ToUpper(string(r)))
+			up = false
+		} else {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func swiftWeight(w string) string {
+	switch w {
+	case "700":
+		return ".bold"
+	case "600":
+		return ".semibold"
+	case "500":
+		return ".medium"
+	default:
+		return ".regular"
+	}
+}
+
+func seconds(ms string) string {
+	var n float64
+	fmt.Sscanf(strings.TrimSuffix(ms, "ms"), "%f", &n)
+	return fmt.Sprintf("%g", n/1000)
+}
+
+func ratio(lineHeight, fontSize string) string {
+	var lh, fs float64
+	fmt.Sscanf(lineHeight, "%f", &lh)
+	fmt.Sscanf(fontSize, "%f", &fs)
+	if fs == 0 {
+		return "1.2"
+	}
+	return fmt.Sprintf("%.2f", lh/fs)
+}

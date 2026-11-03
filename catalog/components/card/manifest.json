@@ -1,0 +1,18 @@
+{
+  "name": "Card",
+  "purpose": "Grouping surface for related content in lists and detail screens. Padding and radius are fixed; content is free.",
+  "tags": ["container", "list", "surface"],
+  "status": "stable",
+  "version": "1.0.0",
+  "variants": [
+    { "name": "default", "props": { "content": "view" } },
+    { "name": "tappable", "props": { "content": "view", "action": "closure" } }
+  ],
+  "tokens": ["color.surface", "color.line", "space.4", "radius.card"],
+  "accessibility": "Tappable cards are one accessibility element with the card's title as label.",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/Card.swift",
+    "flutter": "flutter/card.dart"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "TextField",
+  "purpose": "Single-line text input with label, helper and error text. The only text input in the system; search fields are a variant.",
+  "tags": ["form", "input", "validation", "search"],
+  "status": "stable",
+  "version": "1.0.0",
+  "variants": [
+    { "name": "default", "props": { "label": "String", "text": "Binding<String>", "helper": "String?", "error": "String?" } },
+    { "name": "search", "props": { "placeholder": "String", "text": "Binding<String>" } }
+  ],
+  "tokens": ["color.surface", "color.line", "color.brand", "color.danger", "color.text-1", "color.text-2", "type.body", "type.caption", "space.2", "space.3", "radius.field"],
+  "accessibility": "Label is the accessibility label; error text is announced as the value. Minimum 44 pt tap height.",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/TextField.swift",
+    "flutter": "flutter/text_field.dart"
+  }
+}

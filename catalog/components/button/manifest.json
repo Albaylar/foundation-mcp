@@ -1,0 +1,19 @@
+{
+  "name": "Button",
+  "purpose": "Primary action control. One primary button per screen; secondary and destructive variants for the rest.",
+  "tags": ["action", "cta", "form", "destructive"],
+  "status": "stable",
+  "version": "1.0.0",
+  "variants": [
+    { "name": "primary", "props": { "title": "String", "action": "closure", "isLoading": "Bool" } },
+    { "name": "secondary", "props": { "title": "String", "action": "closure" } },
+    { "name": "destructive", "props": { "title": "String", "action": "closure" } }
+  ],
+  "tokens": ["color.brand", "color.brand-strong", "color.on-brand", "color.surface-2", "color.text-1", "color.danger", "type.label", "space.3", "space.4", "radius.field", "motion.fast"],
+  "accessibility": "Minimum 44 pt / 48 dp height. Title is the accessibility label; isLoading announces 'loading'. Never icon-only without an accessibilityLabel.",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/Button.swift",
+    "flutter": "flutter/button.dart"
+  }
+}
