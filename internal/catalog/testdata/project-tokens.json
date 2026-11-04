@@ -1,0 +1,13 @@
+{
+  "color": {
+    "surface": { "$type": "color", "$value": "#FFFFFF", "$extensions": { "mode": { "dark": "#0E0C0A" } } },
+    "brand": { "$type": "color", "$value": "#7A4B16" }
+  },
+  "type": {
+    "title": { "$type": "typography", "$value": { "fontFamily": "system", "fontSize": "34", "fontWeight": "700", "lineHeight": "41" } },
+    "body": { "$type": "typography", "$value": { "fontFamily": "system", "fontSize": "18", "fontWeight": "400", "lineHeight": "24" } }
+  },
+  "space": {
+    "1": { "$type": "dimension", "$value": "4", "$extensions": { "mode": { "dark": "99" } } }
+  }
+}

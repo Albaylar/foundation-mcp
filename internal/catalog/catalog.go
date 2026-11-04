@@ -22,6 +22,7 @@ type Token struct {
 	Path        string `json:"path"`
 	Type        string `json:"type"`
 	Value       any    `json:"value"`
+	Dark        string `json:"dark,omitempty"` // color tokens only: the value in dark mode
 	Description string `json:"description,omitempty"`
 }
 
@@ -130,6 +131,9 @@ func flattenTokens(prefix string, node map[string]any, out map[string]Token) {
 		if s, ok := node["$description"].(string); ok {
 			t.Description = s
 		}
+		if t.Type == "color" {
+			t.Dark = darkValue(node)
+		}
 		out[prefix] = t
 		return
 	}
@@ -147,6 +151,14 @@ func flattenTokens(prefix string, node map[string]any, out map[string]Token) {
 		}
 		flattenTokens(p, child, out)
 	}
+}
+
+// darkValue reads {"$extensions":{"mode":{"dark":"#000000"}}}; empty when absent.
+func darkValue(node map[string]any) string {
+	ext, _ := node["$extensions"].(map[string]any)
+	mode, _ := ext["mode"].(map[string]any)
+	dark, _ := mode["dark"].(string)
+	return dark
 }
 
 // validate is the rule set register_component also enforces: every token

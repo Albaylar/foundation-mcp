@@ -35,7 +35,7 @@ func Register(s *mcp.Server, c *catalog.Catalog) {
 
 	mcp.AddTool(s, &mcp.Tool{Name: "get_tokens", Description: "Get design tokens of one set (color, type, space, radius, motion) or all, plus a generated FoundationTokens source file for the platform."},
 		func(ctx context.Context, req *mcp.CallToolRequest, in TokensIn) (*mcp.CallToolResult, TokensOut, error) {
-			return nil, TokensOut{Tokens: c.TokensIn(in.Set), Export: c.Export(in.Platform, in.Set)}, nil
+			return nil, TokensOut{Tokens: c.TokensIn(in.Set), Export: c.Export(in.Platform, in.Set), Warnings: c.ExportWarnings(in.Platform, in.Set)}, nil
 		})
 
 	mcp.AddTool(s, &mcp.Tool{Name: "search", Description: "Find components and tokens by purpose, name, tag or variant (e.g. 'destructive confirmation', 'input with error')."},
@@ -101,8 +101,9 @@ type TokensIn struct {
 	Platform string `json:"platform,omitempty" jsonschema:"swiftui or flutter for a generated source file"`
 }
 type TokensOut struct {
-	Tokens []catalog.Token `json:"tokens"`
-	Export string          `json:"export,omitempty"`
+	Tokens   []catalog.Token `json:"tokens"`
+	Export   string          `json:"export,omitempty"`
+	Warnings []string        `json:"warnings,omitempty"`
 }
 
 type SearchIn struct {

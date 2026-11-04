@@ -12,11 +12,18 @@ go build -o "$work/foundation" ./cmd/foundation
 
 case "$platform" in
   swiftui)
-    "$work/foundation" --catalog ./catalog --export swiftui > "$work/FoundationTokens.swift"
-    cp catalog/components/*/swiftui/*.swift "$work/"
-    cd "$work"
-    xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
-      -target arm64-apple-ios17.0-simulator -swift-version 6 ./*.swift
+    typecheck() { # $1 = folder name, the rest = extra export flags
+      local dir="$work/$1"
+      shift
+      mkdir -p "$dir"
+      "$work/foundation" --catalog ./catalog "$@" --export swiftui > "$dir/FoundationTokens.swift"
+      cp catalog/components/*/swiftui/*.swift "$dir/"
+      (cd "$dir" && xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+        -target arm64-apple-ios17.0-simulator -swift-version 6 ./*.swift)
+    }
+    typecheck base
+    # The base tokens never produce adaptive colors or fixed sizes; this fixture does.
+    typecheck project --tokens internal/catalog/testdata/project-tokens.json
     ;;
   flutter)
     mkdir -p "$work/app/lib/tokens" "$work/app/lib/components"

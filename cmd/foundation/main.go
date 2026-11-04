@@ -21,7 +21,7 @@ import (
 	"github.com/Albaylar/foundation-mcp/internal/tools"
 )
 
-const version = "0.2.1"
+const version = "0.3.0"
 
 func main() {
 	root := flag.String("catalog", "catalog", "path to the shared catalog directory")
@@ -48,6 +48,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "no export for platform %q (use swiftui or flutter)\n", *export)
 			os.Exit(1)
 		}
+		printWarnings(c, *export)
 		fmt.Print(out)
 		return
 	}
@@ -57,6 +58,7 @@ func main() {
 			src = "catalog tokens + " + *projectTokens
 		}
 		fmt.Printf("ok: %d tokens (%s), %d components\n", len(c.Tokens), src, len(c.Components))
+		printWarnings(c, "swiftui")
 		return
 	}
 
@@ -70,5 +72,11 @@ func main() {
 	}
 	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func printWarnings(c *catalog.Catalog, platform string) {
+	for _, w := range c.ExportWarnings(platform, "") {
+		fmt.Fprintln(os.Stderr, "warning:", w)
 	}
 }
