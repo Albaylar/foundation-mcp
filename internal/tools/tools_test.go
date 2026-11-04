@@ -69,8 +69,8 @@ func TestListAndGet(t *testing.T) {
 	cs := connect(t)
 	out := call(t, cs, "list_components", map[string]any{"platform": "swiftui"})
 	comps := out["components"].([]any)
-	if len(comps) != 3 {
-		t.Fatalf("want 3 swiftui components, got %d", len(comps))
+	if len(comps) != 4 {
+		t.Fatalf("want 4 swiftui components, got %d", len(comps))
 	}
 	got := call(t, cs, "get_component", map[string]any{"name": "button", "platform": "flutter"})
 	if !strings.Contains(got["source"].(string), "class FButton") {
