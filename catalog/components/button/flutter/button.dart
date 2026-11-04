@@ -27,8 +27,9 @@ class FButton extends StatelessWidget {
       };
 
   Color get _foreground => switch (variant) {
+        FButtonVariant.primary => FoundationTokens.colorOnBrand,
         FButtonVariant.secondary => FoundationTokens.colorText1,
-        _ => FoundationTokens.colorOnBrand,
+        FButtonVariant.destructive => FoundationTokens.colorOnDanger,
       };
 
   @override

@@ -14,7 +14,13 @@ import (
 // connect starts the server over in-memory transports and returns a client session.
 func connect(t *testing.T) *mcp.ClientSession {
 	t.Helper()
-	c, err := catalog.Load("../../catalog")
+	return connectWith(t, "")
+}
+
+// connectWith is connect with a project token file merged over the catalog's tokens.
+func connectWith(t *testing.T, projectTokens string) *mcp.ClientSession {
+	t.Helper()
+	c, err := catalog.LoadWith("../../catalog", projectTokens)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,8 +75,8 @@ func TestListAndGet(t *testing.T) {
 	cs := connect(t)
 	out := call(t, cs, "list_components", map[string]any{"platform": "swiftui"})
 	comps := out["components"].([]any)
-	if len(comps) != 3 {
-		t.Fatalf("want 3 swiftui components, got %d", len(comps))
+	if len(comps) != 4 {
+		t.Fatalf("want 4 swiftui components, got %d", len(comps))
 	}
 	got := call(t, cs, "get_component", map[string]any{"name": "button", "platform": "flutter"})
 	if !strings.Contains(got["source"].(string), "class FButton") {
@@ -95,6 +101,25 @@ func TestTokensExport(t *testing.T) {
 	out = call(t, cs, "get_tokens", map[string]any{"platform": "flutter"})
 	if !strings.Contains(out["export"].(string), "static const Color colorBrand = Color(0xFF0B6E99)") {
 		t.Errorf("dart export wrong:\n%s", out["export"])
+	}
+}
+
+func TestTokensExportReportsFixedSizes(t *testing.T) {
+	cs := connectWith(t, "../catalog/testdata/project-tokens.json")
+	out := call(t, cs, "get_tokens", map[string]any{"platform": "swiftui"})
+	warnings, _ := out["warnings"].([]any)
+	if len(warnings) != 1 || !strings.Contains(warnings[0].(string), "type.body") {
+		t.Errorf("want one warning naming type.body, got %v", out["warnings"])
+	}
+	found := false
+	for _, tok := range out["tokens"].([]any) {
+		m := tok.(map[string]any)
+		if m["path"] == "color.surface" {
+			found = m["dark"] == "#0E0C0A"
+		}
+	}
+	if !found {
+		t.Errorf("get_tokens must return the dark value of color.surface: %v", out["tokens"])
 	}
 }
 

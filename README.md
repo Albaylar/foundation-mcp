@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Version | 0.2.1 (2026-11-03) |
+| Version | 0.3.0 (2026-11-04) |
 | Language | Go 1.25+, official [`modelcontextprotocol/go-sdk`](https://github.com/modelcontextprotocol/go-sdk) v1.8.0 |
 | Transport | stdio (default, for `.mcp.json`) and streamable HTTP (shared server) |
 | Repository | [Albaylar/foundation-mcp](https://github.com/Albaylar/foundation-mcp) |
@@ -74,15 +74,15 @@ cd ~/Developer/foundation-mcp && go build -o foundation ./cmd/foundation
 ```bash
 cd ~/Developer/foundation-mcp && ./foundation --catalog ./catalog --check
 ```
-Expected output: `ok: 24 tokens (catalog tokens), 3 components`.
+Expected output: `ok: 25 tokens (catalog tokens), 4 components`.
 
 | Flag | Meaning |
 |---|---|
 | `--catalog <dir>` | shared catalog (default `catalog`) |
 | `--tokens <file>` | the project's token file, merged over the base tokens |
 | `--http :8765` | streamable HTTP instead of stdio (shared team server) |
-| `--check` | load and validate the catalog, then exit (setup and CI check) |
-| `--export swiftui\|flutter` | print the generated `FoundationTokens` file (with `--tokens`: the project's values), then exit |
+| `--check` | load and validate the catalog, then exit (setup and CI check); warnings about the SwiftUI export go to stderr |
+| `--export swiftui\|flutter` | print the generated `FoundationTokens` file (with `--tokens`: the project's values), then exit; warnings go to stderr |
 | `--version` | print the version |
 
 With the Mobile Development Kit, `/foundation setup` does all of this.
@@ -143,6 +143,8 @@ The token list and, on request, a **generated source file**.
 
 SwiftUI output: `FoundationTokens.Color.brand`, `.Space.s4`, `.Typography.label`, `.Radius.field`, `.Motion.fast`. Flutter output: `FoundationTokens.colorBrand`, `space4`, `typeLabel`. These files are **never edited by hand**; they are regenerated whenever tokens change.
 
+Each token carries `dark` when it has a dark value. `warnings` lists what the export cannot honor (see [Dynamic Type](#dynamic-type)).
+
 ### `search`
 Search by purpose: `"destructive confirmation"`, `"input with error"`. Every word is matched against name, purpose, tags and variant names; the best match comes first. Tokens are searched too.
 
@@ -202,6 +204,7 @@ In the catalog today:
 | **Button** | primary, secondary, destructive; loading state | `FButton` | `FButton` |
 | **TextField** | default (label, helper, error), search | `FTextField` | `FTextField` |
 | **Card** | default, tappable | `FCard` | `FCard` |
+| **EmptyState** | default (title, message, icon) | `FEmptyState` | none |
 
 ## 7. Tokens and the project's brand
 
@@ -211,7 +214,7 @@ In the catalog today:
 { "color": { "brand": { "$type": "color", "$value": "#0B6E99", "$description": "Primary accent" } } }
 ```
 
-The server flattens it to paths like `color.brand`. Groups: `color` (brand, brand-strong, surface, surface-2, text-1, text-2, line, danger, on-brand), `type` (title, body, label, caption), `space` (1–6 = 4–32), `radius` (field, card, pill), `motion` (fast, base).
+The server flattens it to paths like `color.brand`. Groups: `color` (brand, brand-strong, surface, surface-2, text-1, text-2, line, danger, on-brand, on-danger), `type` (title, body, label, caption), `space` (1–6 = 4–32), `radius` (field, card, pill), `motion` (fast, base).
 
 **Project tokens (`--tokens`).** The project file is merged over the base file:
 - same path → the project's value wins,
@@ -225,6 +228,37 @@ Write **only what differs** into the project file:
 ```
 
 Rule: **token names never change.** Inventing `color.primary` in one project means every component is blind to that color. A missing project file is not silently ignored; the server reports an error and does not start.
+
+A project that sets `color.danger` usually sets `color.on-danger` too: it is the text on a destructive Button, and it has to stay readable on that project's `color.danger` in every mode it supports.
+
+### Dark mode
+
+A color token may carry its dark value next to the base value, which is the light value:
+
+```json
+{ "color": { "surface": { "$type": "color", "$value": "#FFFFFF", "$extensions": { "mode": { "dark": "#0E0C0A" } } } } }
+```
+
+| Export | With a dark value | Without one |
+|---|---|---|
+| SwiftUI | `SwiftUI.Color(light: "#FFFFFF", dark: "#0E0C0A")`, follows the system appearance (iOS; the file then imports UIKit) | `SwiftUI.Color(hex: "#FFFFFF")`, the same in both modes |
+| Flutter | the light value only; the file says so in a comment | the value |
+
+A project token replaces the whole base token, dark value included, so a value set without a dark value has none.
+
+### Dynamic Type
+
+The SwiftUI export maps a type token by its `fontSize` to the iOS text style with that default size, and applies the token's weight. Project sizes follow the same table, so a project's `type.title` at 34 becomes Large Title.
+
+| `fontSize` | 34 | 28 | 22 | 20 | 17 | 16 | 15 | 13 | 12 | 11 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `Font.` | `largeTitle` | `title` | `title2` | `title3` | `body` | `callout` | `subheadline` | `footnote` | `caption` | `caption2` |
+
+The base tokens give `type.title` = `Font.title.weight(.bold)`, `type.body` = `Font.body`, `type.label` = `Font.subheadline.weight(.semibold)`, `type.caption` = `Font.footnote`.
+
+**Any other size stays exactly as the project set it, and does not scale**, because SwiftUI has no scaling system font at an arbitrary size. That is never silent: the generated file has a `#warning`, so Xcode shows it on every build, and `--check`, `--export swiftui` and `get_tokens` report it. To scale, use a size from the table.
+
+The `fontFamily` and `lineHeight` of a type token are not used by the SwiftUI export. In Flutter the text scale applies at any size, so nothing changes there.
 
 ## 8. Loading a design
 
@@ -272,10 +306,20 @@ cd ~/Developer/foundation-mcp && go vet ./... && go test ./...
 | `TestCheckUsageAcceptsTypesOfCatalogComponents` | `FButtonVariant` belongs to `FButton` and is not flagged; `FToast` still is |
 | `TestSwiftExportAvoidsReservedNames` | no nested `enum Type` in generated Swift |
 | `TestCatalogSourcesMatchTheGeneratedTokenNames` | catalog sources use the generated names |
+| `TestTokensExportReportsFixedSizes` | `get_tokens` returns dark values and warnings |
+| `TestDarkValueIsReadFromColorTokens` | the dark value is read on color tokens only; the base value stays the light value |
+| `TestSwiftExportAdaptsColorsWithADarkValue` | a dark value gives an adaptive color, a color without one stays fixed |
+| `TestSwiftExportWithoutDarkValuesStaysAsItWas` | no dark values: no UIKit, no adaptive code |
+| `TestSwiftExportMapsBaseTypeToScalingTextStyles` | the four base type tokens map to their text styles, with no warning |
+| `TestSwiftExportFollowsAProjectSizeToItsTextStyle` | a project size follows the table, not the token's name |
+| `TestSwiftExportKeepsASizeWithNoTextStyleAndSaysSo` | another size is kept and reported in the file and in `ExportWarnings` |
+| `TestFlutterExportStaysLightOnlyAndSaysSo` | Flutter keeps the light value and states it |
+| `TestOnDangerKeepsTodaysLookInTheBaseTokens` | base `color.on-danger` equals base `color.on-brand` |
+| `TestDestructiveButtonUsesOnDanger` | both Button sources and the manifest use `color.on-danger` |
 
 The tool tests drive the server through an **in-memory MCP transport** with a real client, so they run end to end including schema validation. New tests are verified by sabotage: break the behavior and the test must turn red (the project-token tests were checked this way).
 
-CI (`.github/workflows/ci.yml`) runs `go vet`, `go test` and `--check`, and **really compiles the catalog**: `scripts/compile-catalog.sh` generates the token file and typechecks every SwiftUI component against the iOS SDK with Swift 6, and runs `flutter analyze` on every Flutter component. String comparisons are not enough here: an early version generated a Swift enum named `Type`, which is reserved, and every test passed while nothing compiled.
+CI (`.github/workflows/ci.yml`) runs `go vet`, `go test` and `--check`, and **really compiles the catalog**: `scripts/compile-catalog.sh` generates the token file and typechecks every SwiftUI component against the iOS SDK with Swift 6, once with the base tokens and once with `internal/catalog/testdata/project-tokens.json` (the base tokens never produce adaptive colors or fixed sizes), and runs `flutter analyze` on every Flutter component. String comparisons are not enough here: an early version generated a Swift enum named `Type`, which is reserved, and every test passed while nothing compiled.
 
 ## 11. Inside the code
 
@@ -293,6 +337,7 @@ Tool inputs are typed Go structs; their `jsonschema` tags become the tool schema
 
 Not done yet:
 - Compose sources (SwiftUI and Flutter only)
+- dark mode in Flutter: the export is `static const` values read directly by the components, so adapting needs a theme-based design; light values only until a Flutter project needs it
 - an automatic token import command from the Figma REST API
 - authentication for the HTTP transport
 - a versioned changelog resource

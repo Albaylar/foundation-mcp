@@ -46,8 +46,9 @@ public struct FButton: View {
 
     private var foreground: Color {
         switch variant {
-        case .primary, .destructive: FoundationTokens.Color.onBrand
+        case .primary: FoundationTokens.Color.onBrand
         case .secondary: FoundationTokens.Color.text1
+        case .destructive: FoundationTokens.Color.onDanger
         }
     }
 }
