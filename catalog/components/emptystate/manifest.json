@@ -8,7 +8,7 @@
     "placeholder"
   ],
   "status": "draft",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "variants": [
     {
       "name": "default",
@@ -35,7 +35,7 @@
     "space.6",
     "radius.card"
   ],
-  "accessibility": "One VoiceOver element reading the title and message. The poster shapes and icon are hidden from VoiceOver.",
+  "accessibility": "One VoiceOver element reading the title and message. The poster shapes and icon are hidden from VoiceOver. Scrolls at text sizes where it does not fit, so no text is cut off.",
   "figma_node": "",
   "platforms": {
     "swiftui": "swiftui/EmptyState.swift"

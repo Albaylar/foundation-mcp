@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Foundation EmptyState. Three poster shapes on a soft brand glow, then a title and one sentence.
 /// The glow fills the space it is given, so a Liquid Glass tab bar and toolbar above it have color to pick up.
+/// Centered when it fits; scrolls when a large text size makes it taller than the space, so nothing is cut off.
 /// Usage: `FEmptyState("No results yet", message: "Finished results will appear here.", systemImage: "photo.on.rectangle")`
 public struct FEmptyState: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -17,6 +18,23 @@ public struct FEmptyState: View {
     }
 
     public var body: some View {
+        ViewThatFits(in: .vertical) {
+            content
+            ScrollView { content }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            RadialGradient(
+                colors: [FoundationTokens.Color.brand.opacity(colorScheme == .dark ? 0.3 : 0.16), .clear],
+                center: .center,
+                startRadius: 0,
+                endRadius: FoundationTokens.Space.s6 * 11
+            )
+            .ignoresSafeArea()
+        }
+    }
+
+    private var content: some View {
         VStack(spacing: FoundationTokens.Space.s5) {
             posters
                 .accessibilityHidden(true)
@@ -31,16 +49,7 @@ public struct FEmptyState: View {
             .multilineTextAlignment(.center)
         }
         .padding(.horizontal, FoundationTokens.Space.s5)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            RadialGradient(
-                colors: [FoundationTokens.Color.brand.opacity(colorScheme == .dark ? 0.3 : 0.16), .clear],
-                center: .center,
-                startRadius: 0,
-                endRadius: FoundationTokens.Space.s6 * 11
-            )
-            .ignoresSafeArea()
-        }
+        .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
     }
 
