@@ -8,6 +8,7 @@ import SwiftUI
 /// The caller owns `isCollapsed` and `tint`, and hosts the bar above the content with `safeAreaInset(edge: .bottom)`,
 /// so its bottom edge sits on the bottom safe-area inset. Requires iOS 26.
 /// Usage: `FLivingTabBar(tabs: tabs, selection: $tab, isCollapsed: $collapsed, tint: accent)`
+@available(iOS 26.0, *)
 public struct FLivingTabBar: View {
     public struct Tab: Identifiable {
         public let id: Int
@@ -206,6 +207,7 @@ public struct FLivingTabBar: View {
     }
 }
 
+@available(iOS 26.0, *)
 #Preview {
     @Previewable @State var selection = 0
     @Previewable @State var isCollapsed = false
