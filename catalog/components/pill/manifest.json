@@ -1,0 +1,45 @@
+{
+  "purpose": "A small capsule of plain information: a status note, a fact about an item, or a label on media with a colored dot.",
+  "tags": [
+    "pill",
+    "chip",
+    "tag",
+    "badge",
+    "status",
+    "note"
+  ],
+  "variants": [
+    {
+      "name": "surface",
+      "props": {
+        "text": "string",
+        "systemImage": "string, optional"
+      }
+    },
+    {
+      "name": "media",
+      "props": {
+        "text": "string",
+        "tint": "Color"
+      }
+    }
+  ],
+  "tokens": [
+    "color.surface-2",
+    "color.text-1",
+    "color.media-ground",
+    "type.caption",
+    "space.1",
+    "space.2",
+    "space.3",
+    "radius.pill"
+  ],
+  "accessibility": "Plain text read by VoiceOver; the icon and dot are hidden. Not a control, so it needs no minimum size. Its height grows with the text.",
+  "name": "Pill",
+  "status": "draft",
+  "version": "1.0.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/Pill.swift"
+  }
+}

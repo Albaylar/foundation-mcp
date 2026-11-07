@@ -1,0 +1,39 @@
+{
+  "purpose": "A floating Liquid Glass tab bar for compact width (at regular width use the system sidebar). Its lens stretches to a new tab, follows a drag across the bar and settles on the nearest tab, and takes an optional tint. While content scrolls down it shrinks to its icons: every tab stays, the lens stays on the selected one, the bar keeps its place.",
+  "tags": [
+    "tab bar",
+    "navigation",
+    "liquid glass",
+    "tabs",
+    "custom",
+    "drag"
+  ],
+  "variants": [
+    {
+      "name": "default",
+      "props": {
+        "tabs": "[FLivingTabBar.Tab]",
+        "selection": "Binding<Int>",
+        "isCollapsed": "Binding<Bool>",
+        "tint": "Color? = nil"
+      }
+    }
+  ],
+  "tokens": [
+    "color.brand-strong",
+    "color.text-1",
+    "color.surface-2",
+    "type.caption",
+    "space.1",
+    "space.6",
+    "motion.base"
+  ],
+  "accessibility": "The bar carries the tab-bar trait; each tab is a VoiceOver button with its title and the selected trait, at least 48 pt. Collapsed, every tab stays reachable: a tap on the selected one expands the bar, a tap on another selects it. Labels grow to XXXL; beyond that the Large Content Viewer shows the tab. Reduce Motion drops the springs and the stretch; Reduce Transparency puts a solid ground under the bar. Selection haptic. Requires iOS 26.",
+  "name": "LivingTabBar",
+  "status": "draft",
+  "version": "1.1.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/LivingTabBar.swift"
+  }
+}

@@ -61,7 +61,7 @@ func TestCheckUsageAcceptsTypesOfCatalogComponents(t *testing.T) {
 	if f := c.CheckUsage(src); len(f) != 0 {
 		t.Errorf("a type belonging to a catalog component must not be flagged: %+v", f)
 	}
-	if f := c.CheckUsage("FToast()"); len(f) != 1 {
+	if f := c.CheckUsage("FMagicThing()"); len(f) != 1 {
 		t.Errorf("a component outside the catalog must still be flagged, got %+v", f)
 	}
 }

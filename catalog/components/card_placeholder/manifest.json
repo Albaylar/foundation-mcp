@@ -1,0 +1,32 @@
+{
+  "purpose": "A quiet shape that holds a card's place in the real layout until its media is ready.",
+  "tags": [
+    "placeholder",
+    "loading",
+    "skeleton",
+    "card",
+    "media"
+  ],
+  "variants": [
+    {
+      "name": "default",
+      "props": {
+        "height": "number",
+        "cornerRadius": "number, optional"
+      }
+    }
+  ],
+  "tokens": [
+    "color.surface-2",
+    "radius.media",
+    "motion.base"
+  ],
+  "accessibility": "Hidden from VoiceOver: it holds no content. With Reduce Motion on it does not pulse.",
+  "name": "CardPlaceholder",
+  "status": "draft",
+  "version": "1.0.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/CardPlaceholder.swift"
+  }
+}
