@@ -1,0 +1,36 @@
+{
+  "purpose": "A floating Liquid Glass tab bar with a lens that follows the selected tab on a spring, and that shrinks to the selected tab while content scrolls down. For compact width: at regular width use the system sidebar.",
+  "tags": [
+    "tab bar",
+    "navigation",
+    "liquid glass",
+    "tabs",
+    "custom"
+  ],
+  "variants": [
+    {
+      "name": "default",
+      "props": {
+        "tabs": "[FLivingTabBar.Tab]",
+        "selection": "Binding<Int>",
+        "isCollapsed": "Bool"
+      }
+    }
+  ],
+  "tokens": [
+    "color.brand-strong",
+    "color.text-1",
+    "type.caption",
+    "space.1",
+    "motion.base",
+    "motion.fast"
+  ],
+  "accessibility": "Each tab is a VoiceOver button with its title and the selected trait, at least 44 pt tall. When collapsed the selected tab stays reachable and a tap expands the bar. Labels grow with text size. Reduce Motion drops the spring. Requires iOS 26.",
+  "name": "LivingTabBar",
+  "status": "draft",
+  "version": "1.0.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/LivingTabBar.swift"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "purpose": "A tappable card that is all picture or video, with its title on a ground that travels with the text, for showcases and feeds.",
+  "tags": [
+    "card",
+    "media",
+    "video",
+    "feed",
+    "showcase",
+    "poster"
+  ],
+  "variants": [
+    {
+      "name": "default",
+      "props": {
+        "title": "string",
+        "label": "string, optional, spoken after the title",
+        "titleFont": "Font, optional",
+        "cornerRadius": "number, optional",
+        "action": "closure",
+        "media": "view",
+        "badge": "view, optional"
+      }
+    }
+  ],
+  "tokens": [
+    "color.on-media",
+    "color.media-ground",
+    "color.text-1",
+    "type.label",
+    "space.2",
+    "space.3",
+    "radius.media",
+    "motion.fast"
+  ],
+  "accessibility": "One VoiceOver button reading the title and the label; the media is hidden. At accessibility text sizes the title moves under the media so it can grow and is never cut off. The ground reaches 4.5:1 over any picture.",
+  "name": "MediaCard",
+  "status": "draft",
+  "version": "1.0.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/MediaCard.swift"
+  }
+}

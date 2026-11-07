@@ -1,0 +1,35 @@
+{
+  "purpose": "A short message after an action, floating above the content for a moment.",
+  "tags": [
+    "toast",
+    "message",
+    "feedback",
+    "snackbar",
+    "status"
+  ],
+  "variants": [
+    {
+      "name": "default",
+      "props": {
+        "message": "string"
+      }
+    }
+  ],
+  "tokens": [
+    "color.surface-2",
+    "color.line",
+    "color.text-1",
+    "type.body",
+    "space.2",
+    "space.4",
+    "radius.pill"
+  ],
+  "accessibility": "The caller posts it as a VoiceOver announcement when it appears. Wraps at large text sizes. It holds no action, so it can be missed safely.",
+  "name": "Toast",
+  "status": "draft",
+  "version": "1.0.0",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/Toast.swift"
+  }
+}

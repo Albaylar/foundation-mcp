@@ -75,14 +75,14 @@ func TestListAndGet(t *testing.T) {
 	cs := connect(t)
 	out := call(t, cs, "list_components", map[string]any{"platform": "swiftui"})
 	comps := out["components"].([]any)
-	if len(comps) != 4 {
-		t.Fatalf("want 4 swiftui components, got %d", len(comps))
+	if len(comps) != 9 {
+		t.Fatalf("want 9 swiftui components, got %d", len(comps))
 	}
 	got := call(t, cs, "get_component", map[string]any{"name": "button", "platform": "flutter"})
 	if !strings.Contains(got["source"].(string), "class FButton") {
 		t.Errorf("flutter source not returned: %v", got["source"])
 	}
-	res, err := cs.CallTool(context.Background(), &mcp.CallToolParams{Name: "get_component", Arguments: map[string]any{"name": "Toast", "platform": "swiftui"}})
+	res, err := cs.CallTool(context.Background(), &mcp.CallToolParams{Name: "get_component", Arguments: map[string]any{"name": "MagicThing", "platform": "swiftui"}})
 	if err != nil {
 		t.Fatalf("error result must not be a protocol error: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestSearch(t *testing.T) {
 
 func TestCheckUsage(t *testing.T) {
 	cs := connect(t)
-	src := "VStack {\n  FButton(\"Save\") {}\n  FToast(\"hi\")\n  Rectangle().fill(Color(hex: \"#FF0000\"))\n  Text(\"x\").padding(12)\n  Text(\"y\").padding(FoundationTokens.Space.s3)\n}"
+	src := "VStack {\n  FButton(\"Save\") {}\n  FMagicThing(\"hi\")\n  Rectangle().fill(Color(hex: \"#FF0000\"))\n  Text(\"x\").padding(12)\n  Text(\"y\").padding(FoundationTokens.Space.s3)\n}"
 	out := call(t, cs, "check_usage", map[string]any{"source": src})
 	findings := out["findings"].([]any)
 	kinds := map[string]int{}
