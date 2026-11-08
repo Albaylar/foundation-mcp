@@ -4,17 +4,26 @@ import SwiftUI
 /// The glow fills the space it is given, so a Liquid Glass tab bar and toolbar above it have color to pick up.
 /// Centered when it fits; scrolls when a large text size makes it taller than the space, so nothing is cut off.
 /// Usage: `FEmptyState("No results yet", message: "Finished results will appear here.", systemImage: "photo.on.rectangle")`
-public struct FEmptyState: View {
+public struct FEmptyState<Action: View>: View {
     @Environment(\.colorScheme) private var colorScheme
 
     private let title: String
     private let message: String
     private let systemImage: String
+    private let action: Action
 
-    public init(_ title: String, message: String, systemImage: String) {
+    /// `action` is an optional button under the text, for an empty state the user can do something about
+    /// ("Try again"). Without one nothing is added.
+    public init(
+        _ title: String,
+        message: String,
+        systemImage: String,
+        @ViewBuilder action: () -> Action
+    ) {
         self.title = title
         self.message = message
         self.systemImage = systemImage
+        self.action = action()
     }
 
     public var body: some View {
@@ -47,10 +56,11 @@ public struct FEmptyState: View {
                     .foregroundStyle(FoundationTokens.Color.text2)
             }
             .multilineTextAlignment(.center)
+            action
         }
         .padding(.horizontal, FoundationTokens.Space.s5)
         .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: Action.self == EmptyView.self ? .combine : .contain)
     }
 
     private var posters: some View {
@@ -85,6 +95,12 @@ public struct FEmptyState: View {
                 .imageScale(.large)
                 .foregroundStyle(FoundationTokens.Color.onBrand)
         }
+    }
+}
+
+extension FEmptyState where Action == EmptyView {
+    public init(_ title: String, message: String, systemImage: String) {
+        self.init(title, message: message, systemImage: systemImage) { EmptyView() }
     }
 }
 

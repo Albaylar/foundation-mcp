@@ -204,7 +204,7 @@ In the catalog today:
 | **Button** | primary, secondary, destructive; loading state | `FButton` | `FButton` |
 | **TextField** | default (label, helper, error), search | `FTextField` | `FTextField` |
 | **Card** | default, tappable | `FCard` | `FCard` |
-| **EmptyState** | default (title, message, icon) | `FEmptyState` | none |
+| **EmptyState** | default (title, message, icon); with-action (adds one view under the text) | `FEmptyState` | none |
 
 ## 7. Tokens and the project's brand
 
