@@ -41,6 +41,8 @@ func TestSwiftExportAdaptsColorsWithADarkValue(t *testing.T) {
 		`static let brand = SwiftUI.Color(hex: "#7A4B16")`,
 		"init(light: String, dark: String)",
 		"userInterfaceStyle == .dark",
+		// UIKit resolves the color off the main thread; a main-actor closure traps there under Swift 6.
+		"UIColor { @Sendable traits in traits.userInterfaceStyle == .dark ? dark : light }",
 		"import UIKit\n",
 	} {
 		if !strings.Contains(out, want) {

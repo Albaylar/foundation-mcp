@@ -87,7 +87,7 @@ func exportSwift(toks []Token) string {
 	}
 	b.WriteString("}\n\nextension SwiftUI.Color {\n    init(hex: String) {\n        var v: UInt64 = 0\n        Scanner(string: String(hex.dropFirst())).scanHexInt64(&v)\n        self.init(red: Double((v >> 16) & 0xFF) / 255, green: Double((v >> 8) & 0xFF) / 255, blue: Double(v & 0xFF) / 255)\n    }\n")
 	if adaptive {
-		b.WriteString("\n    init(light: String, dark: String) {\n        let light = UIColor(SwiftUI.Color(hex: light))\n        let dark = UIColor(SwiftUI.Color(hex: dark))\n        self.init(uiColor: UIColor { $0.userInterfaceStyle == .dark ? dark : light })\n    }\n")
+		b.WriteString("\n    init(light: String, dark: String) {\n        let light = UIColor(SwiftUI.Color(hex: light))\n        let dark = UIColor(SwiftUI.Color(hex: dark))\n        // @Sendable: UIKit resolves the color on its render thread, which a main-actor-isolated closure would trap on.\n        self.init(uiColor: UIColor { @Sendable traits in traits.userInterfaceStyle == .dark ? dark : light })\n    }\n")
 	}
 	b.WriteString("}\n")
 	return b.String()

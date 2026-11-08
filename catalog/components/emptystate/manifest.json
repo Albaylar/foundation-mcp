@@ -1,6 +1,6 @@
 {
   "name": "EmptyState",
-  "purpose": "Whole-screen message when a screen has no content: three poster shapes on a soft brand glow, a title and one sentence saying what will appear there.",
+  "purpose": "Whole-screen message when a screen has no content: three poster shapes on a soft brand glow, a title, one sentence saying what will appear there, and optionally one action under the text.",
   "tags": [
     "empty",
     "state",
@@ -8,7 +8,7 @@
     "placeholder"
   ],
   "status": "draft",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "variants": [
     {
       "name": "default",
@@ -16,6 +16,15 @@
         "message": "string",
         "systemImage": "string",
         "title": "string"
+      }
+    },
+    {
+      "name": "with-action",
+      "props": {
+        "message": "string",
+        "systemImage": "string",
+        "title": "string",
+        "action": "view"
       }
     }
   ],
@@ -35,7 +44,7 @@
     "space.6",
     "radius.card"
   ],
-  "accessibility": "One VoiceOver element reading the title and message. The poster shapes and icon are hidden from VoiceOver. Scrolls at text sizes where it does not fit, so no text is cut off.",
+  "accessibility": "Without an action, one VoiceOver element reading the title and message. With an action, the title, message and action are separate elements, so the action can be reached. The poster shapes and icon are hidden from VoiceOver. Scrolls at text sizes where it does not fit, so no text is cut off.",
   "figma_node": "",
   "platforms": {
     "swiftui": "swiftui/EmptyState.swift"
