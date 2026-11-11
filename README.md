@@ -205,6 +205,8 @@ In the catalog today:
 | **TextField** | default (label, helper, error), search | `FTextField` | `FTextField` |
 | **Card** | default, tappable | `FCard` | `FCard` |
 | **EmptyState** | default (title, message, icon); with-action (adds one view under the text) | `FEmptyState` | none |
+| **StepProgress** | segments (8 steps or fewer), track with a count (more); iOS 26 | `FStepProgress` | none |
+| **CompareSlider** | default (before and after, dragged divider); iOS 26 | `FCompareSlider` | none |
 
 ## 7. Tokens and the project's brand
 
