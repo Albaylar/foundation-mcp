@@ -1,20 +1,18 @@
 import SwiftUI
 
 /// Foundation CompareSlider. Two pictures of the same size, before and after, compared by dragging a divider across them.
-/// The after picture shows to the right of the divider. The divider follows the finger and stays where it is let go;
-/// `lineTop` starts its line, and the Before and After tags beside it, below a bar over the top of the picture;
-/// `lineReach` stops the line short of the bottom when words sit over the lower part of the picture.
+/// The after picture shows to the right of the divider. The divider follows the finger and stays where it is let go.
+/// It has no Before and After tags: the pictures speak for themselves. `lineTop` starts its line below a bar over the
+/// top of the picture; `lineReach` stops it short of the bottom when words sit over the lower part of the picture.
 /// VoiceOver reads it as one adjustable element: swiping up or down moves the divider by a quarter. Requires iOS 26.
 /// The caller decides which gesture wins near the screen's left edge (the system's back swipe).
-/// Usage: `FCompareSlider(position: $pos, label: "Before and after", beforeTitle: "Before", afterTitle: "After", lineTop: 108) { before } after: { after }`
+/// Usage: `FCompareSlider(position: $pos, label: "Before and after", lineTop: 108) { before } after: { after }`
 @available(iOS 26.0, *)
 public struct FCompareSlider<Before: View, After: View>: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     @Binding private var position: Double
     private let label: String
-    private let beforeTitle: String
-    private let afterTitle: String
     private let lineTop: CGFloat
     private let lineReach: CGFloat
     private let before: Before
@@ -26,8 +24,6 @@ public struct FCompareSlider<Before: View, After: View>: View {
     public init(
         position: Binding<Double>,
         label: String,
-        beforeTitle: String,
-        afterTitle: String,
         lineTop: CGFloat = 0,
         lineReach: CGFloat = 1,
         @ViewBuilder before: () -> Before,
@@ -35,8 +31,6 @@ public struct FCompareSlider<Before: View, After: View>: View {
     ) {
         self._position = position
         self.label = label
-        self.beforeTitle = beforeTitle
-        self.afterTitle = afterTitle
         self.lineTop = max(lineTop, 0)
         self.lineReach = min(max(lineReach, 0), 1)
         self.before = before()
@@ -63,7 +57,6 @@ public struct FCompareSlider<Before: View, After: View>: View {
                     .offset(x: x - 1, y: lineTop)
                 handle
                     .offset(x: x - handleSize / 2, y: lineTop + lineHeight * 0.56 - handleSize / 2)
-                tags
             }
             .clipped()
             .contentShape(Rectangle())
@@ -109,35 +102,12 @@ public struct FCompareSlider<Before: View, After: View>: View {
             Circle().fill(FoundationTokens.Color.mediaGround.opacity(0.2)).glassEffect(.regular.interactive(), in: .circle)
         }
     }
-
-    // "Before" and "After" on a dark ground, so they read over any picture.
-    private var tags: some View {
-        HStack {
-            tag(beforeTitle)
-            Spacer(minLength: FoundationTokens.Space.s2)
-            tag(afterTitle)
-        }
-        .padding(.horizontal, FoundationTokens.Space.s4)
-        // Under a bar over the picture (the status bar, a counter) the tags start where the line starts.
-        .padding(.top, max(FoundationTokens.Space.s4, lineTop + FoundationTokens.Space.s2))
-        .accessibilityHidden(true)
-    }
-
-    private func tag(_ text: String) -> some View {
-        Text(text)
-            .font(FoundationTokens.Typography.caption.weight(.semibold))
-            .foregroundStyle(FoundationTokens.Color.onMedia)
-            .padding(.vertical, FoundationTokens.Space.s1)
-            .padding(.horizontal, FoundationTokens.Space.s3)
-            .background(FoundationTokens.Color.mediaGround.opacity(0.8), in: Capsule())
-            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-    }
 }
 
 @available(iOS 26.0, *)
 #Preview {
     @Previewable @State var position = 0.5
-    FCompareSlider(position: $position, label: "Before and after", beforeTitle: "Before", afterTitle: "After") {
+    FCompareSlider(position: $position, label: "Before and after") {
         LinearGradient(colors: [.gray, .black], startPoint: .top, endPoint: .bottom)
     } after: {
         LinearGradient(colors: [.orange, .purple], startPoint: .top, endPoint: .bottom)

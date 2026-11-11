@@ -10,36 +10,30 @@
     "liquid glass"
   ],
   "status": "draft",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "variants": [
     {
       "name": "default",
       "props": {
         "after": "View",
-        "afterTitle": "String",
         "before": "View",
-        "beforeTitle": "String",
         "label": "String, spoken",
         "lineReach": "CGFloat, 0 to 1, optional",
         "position": "Binding<Double>, 0 to 1",
-        "lineTop": "CGFloat, points, optional; the line and the tags start below it"
+        "lineTop": "CGFloat, points, optional"
       }
     }
   ],
   "tokens": [
     "color.on-media",
     "color.media-ground",
-    "type.caption",
     "type.label",
     "space.1",
-    "space.2",
-    "space.3",
-    "space.4",
     "space.5",
     "space.6",
     "motion.fast"
   ],
-  "accessibility": "One adjustable VoiceOver element with the caller's label and the divider's position as a percentage; swiping up or down moves it by a quarter. The Before and After tags are hidden from VoiceOver and stop growing at accessibility size 2. The handle is 52 pt. Under Reduce Transparency the handle's glass becomes a solid dark ground. The caller decides which gesture wins near the screen's left edge.",
+  "accessibility": "One adjustable VoiceOver element with the caller's label and the divider's position as a percentage; swiping up or down moves it by a quarter. The handle is 52 pt. Under Reduce Transparency the handle's glass becomes a solid dark ground. The caller decides which gesture wins near the screen's left edge.",
   "figma_node": "",
   "platforms": {
     "swiftui": "swiftui/CompareSlider.swift"
