@@ -2,8 +2,8 @@ import SwiftUI
 
 /// Foundation CompareSlider. Two pictures of the same size, before and after, compared by dragging a divider across them.
 /// The after picture shows to the right of the divider. The divider follows the finger and stays where it is let go;
-/// `lineTop` starts its line below a bar over the top of the picture; `lineReach` stops it short of the bottom when
-/// words sit over the lower part of the picture.
+/// `lineTop` starts its line, and the Before and After tags beside it, below a bar over the top of the picture;
+/// `lineReach` stops the line short of the bottom when words sit over the lower part of the picture.
 /// VoiceOver reads it as one adjustable element: swiping up or down moves the divider by a quarter. Requires iOS 26.
 /// The caller decides which gesture wins near the screen's left edge (the system's back swipe).
 /// Usage: `FCompareSlider(position: $pos, label: "Before and after", beforeTitle: "Before", afterTitle: "After", lineTop: 108) { before } after: { after }`
@@ -117,7 +117,9 @@ public struct FCompareSlider<Before: View, After: View>: View {
             Spacer(minLength: FoundationTokens.Space.s2)
             tag(afterTitle)
         }
-        .padding(FoundationTokens.Space.s4)
+        .padding(.horizontal, FoundationTokens.Space.s4)
+        // Under a bar over the picture (the status bar, a counter) the tags start where the line starts.
+        .padding(.top, max(FoundationTokens.Space.s4, lineTop + FoundationTokens.Space.s2))
         .accessibilityHidden(true)
     }
 

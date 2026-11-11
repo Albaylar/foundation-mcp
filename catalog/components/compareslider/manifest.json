@@ -10,7 +10,7 @@
     "liquid glass"
   ],
   "status": "draft",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "variants": [
     {
       "name": "default",
@@ -22,7 +22,7 @@
         "label": "String, spoken",
         "lineReach": "CGFloat, 0 to 1, optional",
         "position": "Binding<Double>, 0 to 1",
-        "lineTop": "CGFloat, points, optional"
+        "lineTop": "CGFloat, points, optional; the line and the tags start below it"
       }
     }
   ],
