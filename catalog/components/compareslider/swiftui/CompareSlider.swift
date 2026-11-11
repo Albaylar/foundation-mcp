@@ -2,10 +2,11 @@ import SwiftUI
 
 /// Foundation CompareSlider. Two pictures of the same size, before and after, compared by dragging a divider across them.
 /// The after picture shows to the right of the divider. The divider follows the finger and stays where it is let go;
-/// `lineReach` stops its line short of the bottom when words sit over the lower part of the picture.
+/// `lineTop` starts its line below a bar over the top of the picture; `lineReach` stops it short of the bottom when
+/// words sit over the lower part of the picture.
 /// VoiceOver reads it as one adjustable element: swiping up or down moves the divider by a quarter. Requires iOS 26.
 /// The caller decides which gesture wins near the screen's left edge (the system's back swipe).
-/// Usage: `FCompareSlider(position: $pos, label: "Before and after", beforeTitle: "Before", afterTitle: "After") { before } after: { after }`
+/// Usage: `FCompareSlider(position: $pos, label: "Before and after", beforeTitle: "Before", afterTitle: "After", lineTop: 108) { before } after: { after }`
 @available(iOS 26.0, *)
 public struct FCompareSlider<Before: View, After: View>: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
@@ -14,6 +15,7 @@ public struct FCompareSlider<Before: View, After: View>: View {
     private let label: String
     private let beforeTitle: String
     private let afterTitle: String
+    private let lineTop: CGFloat
     private let lineReach: CGFloat
     private let before: Before
     private let after: After
@@ -26,6 +28,7 @@ public struct FCompareSlider<Before: View, After: View>: View {
         label: String,
         beforeTitle: String,
         afterTitle: String,
+        lineTop: CGFloat = 0,
         lineReach: CGFloat = 1,
         @ViewBuilder before: () -> Before,
         @ViewBuilder after: () -> After
@@ -34,6 +37,7 @@ public struct FCompareSlider<Before: View, After: View>: View {
         self.label = label
         self.beforeTitle = beforeTitle
         self.afterTitle = afterTitle
+        self.lineTop = max(lineTop, 0)
         self.lineReach = min(max(lineReach, 0), 1)
         self.before = before()
         self.after = after()
@@ -43,6 +47,7 @@ public struct FCompareSlider<Before: View, After: View>: View {
         GeometryReader { proxy in
             let width = proxy.size.width
             let x = width * position
+            let lineHeight = max(proxy.size.height * lineReach - lineTop, 0)
             ZStack(alignment: .topLeading) {
                 before
                     .frame(width: width, height: proxy.size.height)
@@ -53,11 +58,11 @@ public struct FCompareSlider<Before: View, After: View>: View {
                     }
                 Rectangle()
                     .fill(FoundationTokens.Color.onMedia)
-                    .frame(width: 2, height: proxy.size.height * lineReach)
+                    .frame(width: 2, height: lineHeight)
                     .shadow(color: FoundationTokens.Color.mediaGround.opacity(0.35), radius: 6)
-                    .offset(x: x - 1)
+                    .offset(x: x - 1, y: lineTop)
                 handle
-                    .offset(x: x - handleSize / 2, y: proxy.size.height * lineReach * 0.56 - handleSize / 2)
+                    .offset(x: x - handleSize / 2, y: lineTop + lineHeight * 0.56 - handleSize / 2)
                 tags
             }
             .clipped()

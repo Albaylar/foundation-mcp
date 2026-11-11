@@ -21,7 +21,8 @@
         "beforeTitle": "String",
         "label": "String, spoken",
         "lineReach": "CGFloat, 0 to 1, optional",
-        "position": "Binding\u003cDouble\u003e, 0 to 1"
+        "position": "Binding<Double>, 0 to 1",
+        "lineTop": "CGFloat, points, optional"
       }
     }
   ],
