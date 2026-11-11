@@ -1,0 +1,63 @@
+{
+  "name": "StepBar",
+  "purpose": "The top bar of a short run of steps, such as a funnel: back, where the user is, and close, together on one Liquid Glass island.",
+  "tags": [
+    "progress",
+    "steps",
+    "funnel",
+    "onboarding",
+    "navigation",
+    "toolbar",
+    "liquid glass"
+  ],
+  "status": "draft",
+  "version": "1.0.0",
+  "variants": [
+    {
+      "name": "segments",
+      "props": {
+        "backLabel": "String",
+        "closeLabel": "String",
+        "current": "Int, from 0",
+        "label": "String, spoken progress",
+        "onBack": "() -\u003e Void",
+        "onClose": "() -\u003e Void",
+        "tint": "Color, optional",
+        "total": "Int, 8 or fewer"
+      }
+    },
+    {
+      "name": "track",
+      "props": {
+        "backLabel": "String",
+        "closeLabel": "String",
+        "current": "Int, from 0",
+        "label": "String, spoken progress",
+        "onBack": "() -\u003e Void",
+        "onClose": "() -\u003e Void",
+        "tint": "Color, optional",
+        "total": "Int, more than 8"
+      }
+    }
+  ],
+  "tokens": [
+    "color.brand",
+    "color.text-1",
+    "color.surface-2",
+    "color.media-ground",
+    "type.caption",
+    "type.label",
+    "space.1",
+    "space.2",
+    "space.3",
+    "space.4",
+    "space.6",
+    "motion.fast",
+    "motion.base"
+  ],
+  "accessibility": "VoiceOver reads three elements in order: the back button, the progress as one element with the caller's label (\"Step 2 of 4\"), and the close button; both buttons have spoken labels and 44 pt targets. The count in the track variant stops growing at XXXL. Under Reduce Transparency the glass becomes a solid surface-2 ground; under Reduce Motion the fill doesn't animate. Colors adapt to light and dark.",
+  "figma_node": "",
+  "platforms": {
+    "swiftui": "swiftui/StepBar.swift"
+  }
+}
